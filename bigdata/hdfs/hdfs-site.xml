@@ -17,8 +17,27 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
-	<property>
-   		<name>fs.default.name</name>
-   		<value>hdfs://localhost:9000/</value>
-	</property>
+  <!-- NAMENODE CONFIGURATIONS-->
+  <property>
+    <name>dfs.namenode.provided.enabled</name>
+    <value>true</value>
+    <description>Enabled provided storage on the Namenode</description>
+  </property>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/user/hadoop/nn</value>
+  </property>
+  <property>
+    <name>dfs.blocksize</name>
+    <value>268435456</value>
+  </property>
+  <property>
+    <name>dfs.namenode.handler.count</name>
+    <value>10</value>
+  </property>
+  <!-- DATANODE CONFIGURATIONS-->
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/user/hadoop/dn</value>
+  </property>
 </configuration>

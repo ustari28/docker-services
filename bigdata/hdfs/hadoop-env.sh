@@ -51,7 +51,7 @@
 
 # The java implementation to use. By default, this environment
 # variable is REQUIRED on ALL platforms except OS X!
-export JAVA_HOME=/home/bigdata/java
+# export JAVA_HOME=
 
 # Location of Hadoop.  By default, Hadoop will attempt to determine
 # this location based upon its execution path.
@@ -157,7 +157,7 @@ esac
 # Enable optional, bundled Hadoop features
 # This is a comma delimited list.  It may NOT be overridden via .hadooprc
 # Entries may be added/removed as needed.
-# export HADOOP_OPTIONAL_TOOLS="hadoop-azure,hadoop-aws,hadoop-aliyun,hadoop-azure-datalake,hadoop-kafka,hadoop-openstack"
+# export HADOOP_OPTIONAL_TOOLS="hadoop-azure-datalake,hadoop-azure,hadoop-openstack,hadoop-kafka,hadoop-aws,hadoop-aliyun"
 
 ###
 # Options for remote shell connectivity
@@ -396,6 +396,15 @@ esac
 # export HDFS_MOVER_OPTS=""
 
 ###
+# Router-based HDFS Federation specific parameters
+# Specify the JVM options to be used when starting the RBF Routers.
+# These options will be appended to the options specified as HADOOP_OPTS
+# and therefore may override any similar flags set in HADOOP_OPTS
+#
+# export HDFS_DFSROUTER_OPTS=""
+###
+
+###
 # Advanced Users Only!
 ###
 
@@ -411,3 +420,10 @@ esac
 #
 # For example, to limit who can execute the namenode command,
 # export HDFS_NAMENODE_USER=hdfs
+
+##############################
+#   HADOOP DEAMONS           #
+#   Custom configurations    #
+##############################
+export HADOOP_NAMENODE_OPTS="-XX:+UseParallelGC -Xmx2g"
+export JAVA_HOME="/usr/lib/jvm/java-8-oracle"

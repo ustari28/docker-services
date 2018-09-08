@@ -15,9 +15,9 @@ docker build -f hadoop-hdfs-namenode.dockerfile --rm -t bigdata/hadoop-hdfs-name
 ```
 Start up namenode:
 ```shell
-docker run -dit -p 9870:9870 -p 9000:9000 -p 9866:9866 -p 9864:9864 --name namenode --network=hadoop-cluster  -h namenode bigdata/hadoop-hdfs-namenode:2.0 "/bin/bash"
+docker run -dit -p 9870:9870 -p 9000:9000 --name namenode --network=hadoop-cluster  -h namenode bigdata/hadoop-hdfs-namenode:lastest "/bin/bash"
 ```
 Start up datanode:
 ```shell
-docker run -dit --name datanode-thor --network=hadoop-cluster --link namenode -h datanode-thor bigdata/hadoop-hdfs-datanode:2.0 "/bin/bash"
+docker run -dit --name datanode --network=hadoop-cluster --link namenode -h datanode bigdata/hadoop-hdfs-datanode:lastest "/bin/bash"
 ```

@@ -1,4 +1,4 @@
-#docker build -f hadoop-hdfs-namenode.dockerfile --rm -t bigdata/hadoop-hdfs-namenode:2.0 .
+#docker build -f hadoop-hdfs-namenode.dockerfile --rm -t bigdata/hadoop-hdfs-namenode:3.0 .
 #docker build -f hadoop-hdfs-namenode.dockerfile --rm -t bigdata/hadoop-hdfs-namenode:lastest .
 FROM ubuntu
 LABEL maintainer="ustargab@gmail.com"
@@ -47,6 +47,7 @@ ENV HDFS_NAMENODE_USER="root"
 ENV HDFS_DATANODE_USER="root"
 ENV HDFS_SECONDARYNAMENODE_USER="root"
 ENV HDFS_JOURNALNODE_USER="root"
+ENV CVS_RSH=ssh
 ENTRYPOINT ["/user/hadoop/home/start-hdfs-namenode.sh"]
 #docker network create --driver bridge hadoop-cluster
-#docker run -dit -p 9870:9870 -p 9000:9000 -p 9866:9866 -p 9864:9864 --name namenode --network=hadoop-cluster  -h namenode bigdata/hadoop-hdfs-namenode:2.0 "/bin/bash"
+#docker run -dit -p 9870:9870 -p 9000:9000 --name namenode --network=hadoop-cluster  -h namenode bigdata/hadoop-hdfs-namenode:3.0 "/bin/bash"

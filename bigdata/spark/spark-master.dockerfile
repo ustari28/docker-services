@@ -19,6 +19,7 @@ COPY start-docker-master.sh /user/spark/home/start-docker-master.sh
 RUN chmod 755 /user/spark/home/start-docker-master.sh
 ENV SPARK_HOME=/user/spark/home/spark-2.3.1
 ENV PATH=$PATH:$SPARK_HOME/sbin
+ENV CVS_RSH=ssh
 EXPOSE 7077 8080
 ENTRYPOINT ["/user/spark/home/start-docker-master.sh"]
 #docker run -dit -p 7077:7077 -p 8080:8080 --network=hadoop-cluster --hostname spark-master -v $HOME/Documents/ficheros-bd:$HOME/Documents/ficheros-bd --rm --name spark-master bigdata/spark-master:2.0 "/bin/bash"

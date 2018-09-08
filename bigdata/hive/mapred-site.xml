@@ -25,17 +25,17 @@
   <!-- ELarger resource limit for maps. -->
   <property>
     <name>mapreduce.map.memory.mb</name>
-    <value>1024</value>
+    <value>512</value>
   </property>
   <!-- Larger heap-size for child jvms of maps. -->
   <property>
     <name>mapreduce.map.java.opts</name>
-    <value>-Xmx1024M</value>
+    <value>-Xmx512M</value>
   </property>
   <!-- Larger resource limit for reduces. -->
   <property>
     <name>mapreduce.reduce.memory.mb</name>
-    <value>2048</value>
+    <value>1024</value>
   </property>
   <!-- Larger heap-size for child jvms of reduces. -->
   <property>
@@ -45,7 +45,7 @@
   <!-- Higher memory-limit while sorting data for efficiency. -->
   <property>
     <name>mapreduce.task.io.sort.mb</name>
-    <value>1024</value>
+    <value>512</value>
   </property>
   <!-- More streams merged at once while sorting files. -->
   <property>

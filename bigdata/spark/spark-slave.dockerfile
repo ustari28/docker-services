@@ -21,6 +21,7 @@ RUN rm -rf /tmp/**
 ENV SPARK_HOME=/user/spark/home/spark-2.3.1
 #ENV PYTHONPATH=
 ENV PATH=$PATH:$SPARK_HOME/sbin
+ENV CVS_RSH=ssh
 EXPOSE 8081
 ENTRYPOINT ["/user/spark/home/start-docker-slave.sh"]
-#docker run -dit -e SPARK_MASTER=spark://spark-master:7077 -p 8081:8081 --network=hadoop-cluster --link spark-master --hostname spark-slave-thor -v $HOME/Documents/ficheros-bd:$HOME/Documents/ficheros-bd  --rm --name spark-slave-thor bigdata/spark-slave:2.0 "/bin/bash"
+#docker run -dit -e SPARK_MASTER=spark://spark-master:7077 -p 8081:8081 --network=hadoop-cluster --link spark-master --hostname spark-slave-thor --rm --name spark-slave-thor bigdata/spark-slave:2.0 "/bin/bash"

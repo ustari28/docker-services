@@ -1,0 +1,26 @@
+version: "3.5"
+
+services:
+
+  traefik:
+    image: "traefik:v2.0.0-rc3"
+    container_name: "traefik.local"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik-nt
+    driver: bridge
+#docker run -d -p 8080:8080 -p 80:80 -v //var/run/docker.dock:/var/run/docker.sock -v ./traefik.toml:/etc/traefik/traefik.toml --network traefik-nt --name traefik traefik:v2.0.0-rc3

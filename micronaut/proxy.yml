@@ -1,0 +1,21 @@
+## Static configuration
+entryPoints:
+  backend:
+    address: ":8888"
+    forwardedHeaders:
+      insecure: true
+      trustedIPs:
+        - "127.0.0.1/32"
+        - "192.168.0.1/32"
+        - "10.26.0.0/16"
+    proxyProtocol:
+      trustedIPs:
+        - "127.0.0.1/32"
+        - "192.168.0.1/32"
+        - "10.26.0.0/16"
+http:
+  services:
+    mn-first-rest:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8080/"

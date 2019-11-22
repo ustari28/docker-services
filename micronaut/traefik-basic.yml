@@ -18,6 +18,81 @@ services:
       - //var/run/docker.sock:/var/run/docker.sock
     networks:
       - traefik
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.4.2"
+    container_name: "elasticsearch.local"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+    networks:
+      - traefik
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:7.4.2"
+    container_name: "kibana.local"
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch.local:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - traefik
+  kafka:
+    image: "spotify/kafka"
+    container_name: "kafka.local"
+    ports:
+      - "2181:2181"
+    environment:
+      - ADVERTISED_HOST=kafka.local
+      - ADVERTISED_PORT=9092
+    networks:
+      - traefik
+  jaeger-collector:
+    image: "jaegertracing/all-in-one:1.15"
+    container_name: "jaeger-collector.local"
+    command:
+      - "--log-level=debug"
+    ports:
+      - "16686:16686"
+    environment:
+      - SPAN_STORAGE_TYPE=kafka
+      - KAFKA_PRODUCER_BROKERS=kafka.local:9092
+      - KAFKA_PRODUCER_TOPIC=tracing
+    networks:
+      - traefik
+  # jaeger-agent:
+  #   image: "jaegertracing/jaeger-agent:1.15"
+  #   container_name: "jaeger-agent.local"
+  #   command:
+  #     - "--reporter.grpc.host-port=jaeger-collector.local:14250"
+  #     - "--log-level=debug"
+  #   environment:
+  #     - JAEGER_USER=alan
+  #     - JAEGER_PASSWORD=alan
+  #   ports:
+  #     - "14271:14271"
+  #   networks:
+  #     - traefik
+  # zipkin:
+  #   image: "openzipkin/zipkin"
+  #   container_name: "zipkin.local"
+  #   ports:
+  #     - "9411:9411"
+  #   environment:
+  #     - KAFKA_BOOTSTRAP_SERVERS=kafka.local:9092
+  #     - STORAGE_TYPE=elasticsearch
+  #     - ES_HOSTS=http://elasticsearch.local:9200
+  #     - TZ=Europe/Madrid
+  #   depends_on:
+  #     - kafka
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /etc/timezone:/etc/timezone:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   networks:
+  #     - traefik
 
 networks:
   traefik:

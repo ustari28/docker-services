@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.7"
 
 services:
 
@@ -44,13 +44,14 @@ services:
     container_name: "kafka.local"
     ports:
       - "2181:2181"
+      - "9092:9092"
     environment:
       - ADVERTISED_HOST=kafka.local
       - ADVERTISED_PORT=9092
     networks:
       - traefik
   jaeger-collector:
-    image: "jaegertracing/all-in-one:1.15"
+    image: "jaegertracing/jaeger-collector:1.15"
     container_name: "jaeger-collector.local"
     command:
       - "--log-level=debug"
@@ -60,6 +61,23 @@ services:
       - SPAN_STORAGE_TYPE=kafka
       - KAFKA_PRODUCER_BROKERS=kafka.local:9092
       - KAFKA_PRODUCER_TOPIC=tracing
+      - KAFKA_PRODUCER_ENCODING=json
+    networks:
+      - traefik
+  spark-master:
+    image: bde2020/spark-master:2.4.4-hadoop2.7
+    container_name: spark-master.local
+    ports:
+      - "9080:8080"
+      - "7077:7077"
+    networks:
+      - traefik
+  spark-worker:
+    image: bde2020/spark-worker:2.4.4-hadoop2.7
+    depends_on:
+      - spark-master
+    environment:
+      - "SPARK_MASTER=spark://spark-master.local:7077"
     networks:
       - traefik
   # jaeger-agent:
@@ -73,24 +91,6 @@ services:
   #     - JAEGER_PASSWORD=alan
   #   ports:
   #     - "14271:14271"
-  #   networks:
-  #     - traefik
-  # zipkin:
-  #   image: "openzipkin/zipkin"
-  #   container_name: "zipkin.local"
-  #   ports:
-  #     - "9411:9411"
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka.local:9092
-  #     - STORAGE_TYPE=elasticsearch
-  #     - ES_HOSTS=http://elasticsearch.local:9200
-  #     - TZ=Europe/Madrid
-  #   depends_on:
-  #     - kafka
-  #   volumes:
-  #     - /etc/localtime:/etc/localtime:ro
-  #     - /etc/timezone:/etc/timezone:ro
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
   #   networks:
   #     - traefik
 

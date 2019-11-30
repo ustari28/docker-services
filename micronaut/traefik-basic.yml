@@ -24,6 +24,7 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+      - "9600:9600"
     environment:
       - discovery.type=single-node
     networks:
@@ -50,13 +51,16 @@ services:
       - ADVERTISED_PORT=9092
     networks:
       - traefik
+#no reconnecta al storage, buscar delay o auto-reconnect
   jaeger-collector:
     image: "jaegertracing/jaeger-collector:1.15"
     container_name: "jaeger-collector.local"
     command:
       - "--log-level=debug"
     ports:
-      - "16686:16686"
+      - "14250/udp"
+    depends_on:
+      - kafka
     environment:
       - SPAN_STORAGE_TYPE=kafka
       - KAFKA_PRODUCER_BROKERS=kafka.local:9092
@@ -80,19 +84,22 @@ services:
       - "SPARK_MASTER=spark://spark-master.local:7077"
     networks:
       - traefik
-  # jaeger-agent:
-  #   image: "jaegertracing/jaeger-agent:1.15"
-  #   container_name: "jaeger-agent.local"
-  #   command:
-  #     - "--reporter.grpc.host-port=jaeger-collector.local:14250"
-  #     - "--log-level=debug"
-  #   environment:
-  #     - JAEGER_USER=alan
-  #     - JAEGER_PASSWORD=alan
-  #   ports:
-  #     - "14271:14271"
-  #   networks:
-  #     - traefik
+  jaeger-agent:
+    image: "jaegertracing/jaeger-agent:1.15"
+    container_name: "jaeger-agent.local"
+    command:
+      - "--reporter.grpc.host-port=jaeger-collector.local:14250"
+      - "--log-level=debug"
+    depends_on:
+      - kafka
+      - jaeger-collector
+    # environment:
+    #   - JAEGER_USER=alan
+    #   - JAEGER_PASSWORD=alan
+    # ports:
+    #   - "14271:14271"
+    networks:
+      - traefik
 
 networks:
   traefik:

@@ -96,8 +96,8 @@ services:
     # environment:
     #   - JAEGER_USER=alan
     #   - JAEGER_PASSWORD=alan
-    # ports:
-    #   - "14271:14271"
+    ports:
+      - "5775:5775"
     networks:
       - traefik
 

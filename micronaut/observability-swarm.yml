@@ -1,0 +1,126 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: "traefik:v2.0.0-rc3"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock
+    networks:
+      traefik:
+        aliases:
+          - traefik.local
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.4.2"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+      - "9600:9600"
+    environment:
+      - discovery.type=single-node
+    networks:
+      traefik:
+        aliases:
+          - elasticsearch.local
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:7.4.2"
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch.local:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      traefik:
+        aliases:
+          - kibana.local
+  kafka:
+    image: "spotify/kafka"
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    environment:
+      - ADVERTISED_HOST=kafka.local
+      - ADVERTISED_PORT=9092
+    networks:
+      traefik:
+        aliases:
+          - kafka.local
+#no reconnecta al storage, buscar delay o auto-reconnect
+  jaeger-collector:
+    image: "jaegertracing/jaeger-collector:1.16"
+    command:
+      - "--log-level=debug"
+    ports:
+      - "14250/udp"
+      - "14268:14268"
+    depends_on:
+      - kafka
+    environment:
+      - SPAN_STORAGE_TYPE=kafka
+      - KAFKA_PRODUCER_BROKERS=kafka.local:9092
+      - KAFKA_PRODUCER_TOPIC=tracing
+      - KAFKA_PRODUCER_ENCODING=json
+    networks:
+      traefik:
+        aliases:
+          - jaeger-collector.local
+  spark-master:
+    image: bde2020/spark-master:2.4.4-hadoop2.7
+    ports:
+      - "9080:8080"
+      - "7077:7077"
+    networks:
+      traefik:
+        aliases:
+          - spark-master.local
+  spark-worker:
+    image: bde2020/spark-worker:2.4.4-hadoop2.7
+    deploy:      
+      replicas: 3
+    depends_on:
+      - spark-master
+    environment:
+      - "SPARK_MASTER=spark://spark-master.local:7077"
+    networks:
+      - traefik
+  jaeger-agent:
+    image: "jaegertracing/jaeger-agent:1.16"
+    command:
+      - "--reporter.grpc.host-port=jaeger-collector.local:14250"
+      - "--log-level=debug"
+    depends_on:
+      - kafka
+      - jaeger-collector
+    ports:
+      #- "5775:5775"
+      - "6831:6831"
+    networks:
+      traefik:
+        aliases:
+          - jaeger-agent.local
+  rest-service-init-quarkus:
+    image: "quarkus/rest-service-init-quarkus:1.0.0"
+    depends_on:
+      - jaeger-collector
+    environment:
+      - QUARKUS_JAEGER_ENDPOINT=http://jaeger-collector.local:14268/api/traces
+    ports:
+      - "7080:8080"
+    networks:
+      traefik:
+        aliases:
+          - rest-service-init-quarkus.local
+
+networks:
+  traefik:
+#docker swarm init
+#docker stack deploy -c FILE NAME_STACK
